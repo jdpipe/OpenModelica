@@ -63,6 +63,10 @@ jobs:
         export PATH=$PATH:/c/Program\ Files/Java/jdk-17.0.1/bin
         javac --version
 
+    - name: Checkout submodules
+      run: |
+        git submodule update --init --recursive
+
     - name: Build OMC
       run: |
         export PATH=$PATH:~/.local/bin
