@@ -75,7 +75,7 @@ jobs:
         cat netstream-storage.h
         echo "-----------------------------------------"
         popd
-        pushd OMCompiler/3rdParty/graphstream/gs-netstream
+        pushd OMCompiler/3rdParty/graphstream
         cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local
         make
         
