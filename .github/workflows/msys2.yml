@@ -74,6 +74,10 @@ jobs:
         echo "--------- new netstream-storage.h -----------"
         cat netstream-storage.h
         echo "-----------------------------------------"
+        popd
+        pushd OMCompiler/3rdParty/graphstream/gs-netstream
+        cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local
+        make
         
     - name: Install JAVA
       run: |
@@ -93,4 +97,4 @@ jobs:
         echo "---------------------"
         make -f Makefile.omdev.mingw
 
-# vim: sw=2:ts=2:et:tw=80
+# vim:sw=2:ts=2:et:tw=80
