@@ -76,7 +76,7 @@ jobs:
         echo "-----------------------------------------"
         popd
         pushd OMCompiler/3rdParty/graphstream
-        cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local
+        cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local -G "MinGW Makefiles"
         make
         
     - name: Install JAVA
