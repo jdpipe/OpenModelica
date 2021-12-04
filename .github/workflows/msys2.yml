@@ -64,6 +64,15 @@ jobs:
         ls -la
         echo "--------- netstream-storage.h -----------"
         cat netstream-storage.h
+        echo "-----------------------------------------"
+        cd  OMCompiler/3rdParty/graphstream/
+        wget https://github.com/jdpipe/gs-netstream/archive/refs/heads/master.zip
+        cd gs-netstream
+        bsdtar xvf ../master.zip -s'|[^/]*/||'
+        cd c++/src
+        echo "--------- new netstream-storage.h -----------"
+        cat netstream-storage.h
+        echo "-----------------------------------------"
         
     - name: Install JAVA
       run: |
