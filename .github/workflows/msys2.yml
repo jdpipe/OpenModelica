@@ -69,6 +69,9 @@ jobs:
         export PATH=$PATH:/c/Program\ Files/Java/jdk-17.0.1/bin
         export OMDEV=/mingw64
         cd OMCompiler
+        echo "LS 3RDPARTY----------"
+        ls 3rdParty
+        echo "---------------------"
         make -f Makefile.omdev.mingw
 
-
+# vim: sw=2:ts=2:et:tw=80
