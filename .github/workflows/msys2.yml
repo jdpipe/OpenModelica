@@ -36,7 +36,7 @@ jobs:
           mingw-w64-x86_64-openblas
           mingw-w64-x86_64-gcc
           mingw-w64-x86_64-gcc-fortran
-          mingw-w64-x86_64-cmake
+          mingw-w64-x86_64-cmakeq
           mingw-w64-x86_64-binutils
           mingw-w64-x86_64-hdf5
           mingw-w64-x86_64-pkgconf
@@ -50,16 +50,16 @@ jobs:
           mingw-w64-x86_64-ncurses
           mingw-w64-x86_64-readline
           mingw-w64-x86_64-OpenSceneGraph
-          mingw-w64-i686-qtwebkit
+          mingw-w64-x86_64-qtwebkit
           mingw-w64-x86_64-sundials 
-          mingw-w64-i686-zeromq 
+          mingw-w64-x86_64-zeromq 
           
     - uses: actions/checkout@v2
 
     - name: Install JAVA
       run: |
         wget "https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.msi"
-        cmd /C "start msiexec /i jdk-17_windows-x64_bin.msi /qn"
+        msiexec -i jdk-17_windows-x64_bin.msi -qn -passive
         export PATH=$PATH:/c/Program\ Files/Java/jdk-17.0.1/bin
         javac --version
 
