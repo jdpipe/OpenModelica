@@ -57,6 +57,13 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
+
+    - name: Look at graphstream
+      run: |
+        cd  OMCompiler/3rdParty/graphstream/gs-netstream/c++/src
+        ls -la
+        echo "--------- netstream-storage.h -----------"
+        cat netstream-storage.h
         
     - name: Install JAVA
       run: |
