@@ -154,8 +154,8 @@ $(OMBUILDDIR)/include/omc/c/gc_version.h: 3rdParty/gc/include/gc_version.h
 	cp -pPR $< $@
 $(OMBUILDDIR)/include/omc/c/gc_pthread_redirects.h: 3rdParty/gc/include/gc_pthread_redirects.h
 	cp -pPR $< $@
-3rdParty/gc/Makefile: 3rdParty/gc/configure.ac
-	(cd 3rdParty/gc && cmake -DCMAKE_INSTALL_PREFIX="`pwd`")
+3rdParty/gc/Makefile: 3rdParty/gc/CMakeLists.txt
+	(cd 3rdParty/gc && cmake -DCMAKE_INSTALL_PREFIX="`pwd`" -G "MinGW Makefiles")
 
 ipopt:
 	mkdir -p $(OMC_IPOPT_ROOT)/build
