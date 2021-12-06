@@ -87,6 +87,7 @@ jobs:
         javac --version
     
     - name: Check 3rdParty
+      run: |
         cd OMCompiler
         echo "LS 3RDPARTY----------"
         ls 3rdParty
