@@ -31,28 +31,29 @@ jobs:
         install: >-
           git wget zip unzip tar make diffutils patch 
           autoconf automake m4 pkg-config libtool bison 
-          mingw-w64-x86_64-toolchain
-          mingw-w64-x86_64-opencl-headers
-          mingw-w64-x86_64-openblas
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-gcc-fortran
-          mingw-w64-x86_64-cmake
-          mingw-w64-x86_64-binutils
-          mingw-w64-x86_64-hdf5
-          mingw-w64-x86_64-pkgconf
-          mingw-w64-x86_64-python
-          mingw-w64-x86_64-python-pip
-          mingw-w64-x86_64-python-wheel
-          mingw-w64-x86_64-msmpi
-          mingw-w64-x86_64-lpsolve
-          mingw-w64-x86_64-hdf5
-          mingw-w64-x86_64-expat
-          mingw-w64-x86_64-ncurses
-          mingw-w64-x86_64-readline
-          mingw-w64-x86_64-OpenSceneGraph
-          mingw-w64-x86_64-qtwebkit
-          mingw-w64-x86_64-sundials 
-          mingw-w64-x86_64-zeromq 
+          mingw-w64-clang-x86_64-toolchain
+          mingw-w64-clang-x86_64-opencl-headers
+          mingw-w64-clang-x86_64-openblas
+          mingw-w64-clang-x86_64-gcc
+          mingw-w64-clang-x86_64-gcc-fortran
+          mingw-w64-clang-x86_64-clang
+          mingw-w64-clang-x86_64-cmake
+          mingw-w64-clang-x86_64-binutils
+          mingw-w64-clang-x86_64-hdf5
+          mingw-w64-clang-x86_64-pkgconf
+          mingw-w64-clang-x86_64-python
+          mingw-w64-clang-x86_64-python-pip
+          mingw-w64-clang-x86_64-python-wheel
+          mingw-w64-clang-x86_64-msmpi
+          mingw-w64-clang-x86_64-lpsolve
+          mingw-w64-clang-x86_64-hdf5
+          mingw-w64-clang-x86_64-expat
+          mingw-w64-clang-x86_64-ncurses
+          mingw-w64-clang-x86_64-readline
+          mingw-w64-clang-x86_64-OpenSceneGraph
+          mingw-w64-clang-x86_64-qtwebkit
+          mingw-w64-clang-x86_64-sundials 
+          mingw-w64-clang-x86_64-zeromq 
           
     - uses: actions/checkout@v2
       with:
