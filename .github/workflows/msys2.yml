@@ -85,16 +85,20 @@ jobs:
         msiexec -i jdk-17_windows-x64_bin.msi -qn -passive
         export PATH=$PATH:/c/Program\ Files/Java/jdk-17.0.1/bin
         javac --version
+    
+    - name: Check 3rdParty
+        cd OMCompiler
+        echo "LS 3RDPARTY----------"
+        ls 3rdParty
+        echo "---------------------"
 
     - name: Build OMC
       run: |
         export PATH=$PATH:~/.local/bin
         export PATH=$PATH:/c/Program\ Files/Java/jdk-17.0.1/bin
         export OMDEV=/mingw64
-        cd OMCompiler
-        echo "LS 3RDPARTY----------"
-        ls 3rdParty
-        echo "---------------------"
+        export OPENMODELICAHOME=$PWD/build
+        export OPENMODELICALIBRARY=$PWD/build/lib/library
         make -f Makefile.omdev.mingw
 
 # vim:sw=2:ts=2:et:tw=80
