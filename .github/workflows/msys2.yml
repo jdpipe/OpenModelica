@@ -103,9 +103,9 @@ jobs:
         export PATH=$PATH:~/.local/bin
         export PATH=$PATH:/c/Program\ Files/Java/jdk-17.0.1/bin
         export OMDEV=/mingw64
-        cd OMCompiler
         mkdir build
         cd build
         cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local
+        make OMCompiler
 
 # vim:sw=2:ts=2:et:tw=80
