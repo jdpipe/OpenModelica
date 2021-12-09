@@ -32,6 +32,7 @@ jobs:
           git wget zip unzip tar make diffutils patch 
           autoconf automake m4 pkg-config libtool bison 
           mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-curl
           mingw-w64-x86_64-opencl-headers
           mingw-w64-x86_64-openblas
           mingw-w64-x86_64-clang
@@ -82,9 +83,6 @@ jobs:
         cat netstream-storage.h
         echo "-----------------------------------------"
         popd
-        pushd OMCompiler/3rdParty/graphstream
-        cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local -G "MinGW Makefiles"
-        make
         
     - name: Install JAVA
       run: |
@@ -105,8 +103,9 @@ jobs:
         export PATH=$PATH:~/.local/bin
         export PATH=$PATH:/c/Program\ Files/Java/jdk-17.0.1/bin
         export OMDEV=/mingw64
-        export OPENMODELICAHOME=$PWD/build
-        export OPENMODELICALIBRARY=$PWD/build/lib/library
-        make -f Makefile.omdev.mingw
+        cd OMCompiler
+        mkdir build
+        cd build
+        cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local
 
 # vim:sw=2:ts=2:et:tw=80
