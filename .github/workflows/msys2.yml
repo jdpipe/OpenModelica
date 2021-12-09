@@ -52,6 +52,7 @@ jobs:
           mingw-w64-x86_64-ncurses
           mingw-w64-x86_64-readline
           mingw-w64-x86_64-OpenSceneGraph
+          mingw-w64-x86_64-qt
           mingw-w64-x86_64-qtwebkit
           mingw-w64-x86_64-sundials 
           mingw-w64-x86_64-zeromq 
