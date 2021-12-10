@@ -45,6 +45,7 @@ jobs:
           mingw-w64-x86_64-python
           mingw-w64-x86_64-python-pip
           mingw-w64-x86_64-python-wheel
+          mingw-w64-x86_64-dlfcn
           mingw-w64-x86_64-msmpi
           mingw-w64-x86_64-lpsolve
           mingw-w64-x86_64-hdf5
