@@ -107,7 +107,7 @@ jobs:
         export OMDEV=/mingw64
         mkdir build
         cd build
-        cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local || cat build/CMakeFiles/CMakeError.log
+        cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local || cat CMakeFiles/CMakeError.log
         make OMCompiler
         
 
