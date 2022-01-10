@@ -64,6 +64,7 @@ import Algorithm = NFAlgorithm;
 import InstContext = NFInstContext;
 
 protected
+import Config;
 import Array;
 import Error;
 import FlagsUtil;
@@ -175,7 +176,9 @@ algorithm
   flatModel := UnitCheck.checkUnits(flatModel);
 
   // Apply simplifications to the model.
-  flatModel := SimplifyModel.simplify(flatModel);
+  if not Flags.getConfigBool(Flags.NO_SIMPLIFY) then
+    flatModel := SimplifyModel.simplify(flatModel);
+  end if;
 
   // Collect package constants that couldn't be substituted with their values
   // (e.g. because they where used with non-constant subscripts), and add them
@@ -197,12 +200,18 @@ algorithm
   else
     // Remove empty arrays from variables
     flatModel.variables := List.filterOnFalse(flatModel.variables, Variable.isEmptyArray);
+    flatModel.variables := list(Flatten.vectorizeVariableBinding(v) for v in flatModel.variables);
   end if;
 
   flatModel := InstUtil.replaceEmptyArrays(flatModel);
   InstUtil.dumpFlatModelDebug("scalarize", flatModel, functions);
 
   VerifyModel.verify(flatModel);
+
+  if not Config.simCodeTarget() == "Cpp" and not Config.simCodeTarget() == "omsicpp" then
+    (flatModel, functions) := InstUtil.expandSlicedCrefs(flatModel, functions);
+  end if;
+
   flatModel := InstUtil.combineSubscripts(flatModel);
 
   //(var_count, eq_count) := CheckModel.checkModel(flatModel);
@@ -334,7 +343,7 @@ algorithm
       then
         Class.fromEnumeration(cdef.enumLst, ty, prefs, scope);
 
-    else Class.PARTIAL_CLASS(NFClassTree.EMPTY, Modifier.NOMOD(), prefs);
+    else Class.PARTIAL_CLASS(NFClassTree.EMPTY, Modifier.NOMOD(), Modifier.NOMOD(), prefs);
   end match;
 end partialInstClass2;
 
@@ -400,7 +409,11 @@ algorithm
     case SCode.PARTS() then expandClassParts(def, node, info);
     case SCode.CLASS_EXTENDS() then expandClassParts(def, node, info);
     // A short class definition, e.g. class A = B.
-    case SCode.DERIVED() then expandClassDerived(def, cdef, node, info);
+    case SCode.DERIVED()
+      then match cdef.typeSpec
+        case Absyn.TypeSpec.TCOMPLEX() then expandClassDerivedComplex(def, cdef, node, info);
+        else expandClassDerived(def, cdef, node, info);
+      end match;
 
     else
       algorithm
@@ -418,7 +431,7 @@ function expandClassParts
 protected
   Class cls;
   ClassTree cls_tree;
-  Modifier mod;
+  Modifier mod, cc_mod;
   InstNode builtin_ext;
   Class.Prefixes prefs;
   Restriction res;
@@ -428,7 +441,7 @@ algorithm
   cls := Class.initExpandedClass(cls);
   node := InstNode.updateClass(cls, node);
 
-  Class.EXPANDED_CLASS(elements = cls_tree, modifier = mod, prefixes = prefs) := cls;
+  Class.EXPANDED_CLASS(elements = cls_tree, modifier = mod, ccMod = cc_mod, prefixes = prefs) := cls;
   builtin_ext := ClassTree.mapFoldExtends(cls_tree, expandExtends, InstNode.EMPTY_NODE());
 
   if InstNode.name(builtin_ext) == "ExternalObject" then
@@ -440,7 +453,7 @@ algorithm
 
     cls_tree := ClassTree.expand(cls_tree);
     res := Restriction.fromSCode(SCodeUtil.getClassRestriction(def));
-    cls := Class.EXPANDED_CLASS(cls_tree, mod, prefs, res);
+    cls := Class.EXPANDED_CLASS(cls_tree, mod, cc_mod, prefs, res);
     node := InstNode.updateClass(cls, node);
   end if;
 end expandClassParts;
@@ -470,7 +483,7 @@ algorithm
         // Look up the base class and expand it.
         scope := InstNode.parent(ext);
         base_nodes as (base_node :: _) := Lookup.lookupBaseClassName(base_path, scope, info);
-        checkExtendsLoop(base_node, base_path, info);
+        checkExtendsLoop(base_node, scope, base_path, info);
         checkReplaceableBaseClass(base_nodes, base_path, info);
         base_node := expand(base_node);
 
@@ -494,8 +507,11 @@ function checkExtendsLoop
   "Gives an error if a base node is in the process of being expanded itself,
    since that means we have an extends loop in the model."
   input InstNode node;
+  input InstNode scope;
   input Absyn.Path path;
   input SourceInfo info;
+protected
+  InstNode parent;
 algorithm
   () := match InstNode.getClass(node)
     // expand begins by changing the class to an EXPANDED_CLASS, but keeps the
@@ -508,7 +524,22 @@ algorithm
       then
         fail();
 
-    else ();
+    else
+      algorithm
+        parent := scope;
+
+        while not InstNode.isTopScope(parent) loop
+          if InstNode.refEqual(parent, node) then
+            Error.addSourceMessage(Error.EXTENDS_LOOP,
+              {AbsynUtil.pathString(path)}, info);
+            fail();
+          end if;
+
+          parent := InstNode.parentScope(parent);
+        end while;
+      then
+        ();
+
   end match;
 end checkExtendsLoop;
 
@@ -683,7 +714,7 @@ protected
   SCode.Attributes sattrs;
   Component.Attributes attrs;
   list<Dimension> dims;
-  Modifier mod;
+  Modifier mod, cc_mod;
   Restriction res;
 algorithm
   SCode.DERIVED(typeSpec = ty, attributes = sattrs) := definition;
@@ -713,11 +744,43 @@ algorithm
   attrs := instDerivedAttributes(sattrs);
   dims := list(Dimension.RAW_DIM(d, InstNode.parent(node)) for d in AbsynUtil.typeSpecDimensions(ty));
   mod := Class.getModifier(cls);
+  cc_mod := Class.getCCModifier(cls);
 
   res := Restriction.fromSCode(SCodeUtil.getClassRestriction(element));
-  cls := Class.EXPANDED_DERIVED(ext_node, mod, listArray(dims), prefs, attrs, res);
+  cls := Class.EXPANDED_DERIVED(ext_node, mod, cc_mod, listArray(dims), prefs, attrs, res);
   node := InstNode.updateClass(cls, node);
 end expandClassDerived;
+
+function expandClassDerivedComplex
+  input SCode.Element element;
+  input SCode.ClassDef definition;
+  input output InstNode node;
+  input SourceInfo info;
+protected
+  Absyn.Path ty_path;
+  Class.Prefixes prefs;
+  Type ty;
+  Restriction res;
+  Class cls;
+algorithm
+  SCode.DERIVED(typeSpec = Absyn.TypeSpec.TCOMPLEX(path = ty_path)) := definition;
+
+  ty := match ty_path
+    case Absyn.IDENT("polymorphic") then Type.POLYMORPHIC(InstNode.name(node));
+    else
+      algorithm
+        Error.addSourceMessage(Error.LOOKUP_BASECLASS_ERROR,
+          {AbsynUtil.pathString(ty_path), InstNode.scopeName(node)}, info);
+      then
+        fail();
+  end match;
+
+  cls := InstNode.getClass(node);
+  prefs := Class.getPrefixes(cls);
+  res := Restriction.fromSCode(SCodeUtil.getClassRestriction(element));
+  cls := Class.PARTIAL_BUILTIN(ty, NFClassTree.EMPTY, Modifier.NOMOD(), prefs, res);
+  node := InstNode.updateClass(cls, node);
+end expandClassDerivedComplex;
 
 function instDerivedAttributes
   input SCode.Attributes scodeAttr;
@@ -809,6 +872,7 @@ algorithm
         // Fetch modification on the class definition (for class extends).
         mod := instElementModifier(InstNode.definition(node), node, par);
         mod := Modifier.propagate(mod, node, par);
+        mod := Modifier.merge(mod, cls.ccMod);
         // Merge with any outer modifications.
         outer_mod := Modifier.propagate(cls.modifier, node, par);
         outer_mod := Modifier.merge(outerMod, outer_mod);
@@ -857,6 +921,7 @@ algorithm
         // Merge outer modifiers and attributes.
         mod := instElementModifier(InstNode.definition(node), node, InstNode.rootParent(node));
         mod := Modifier.propagate(mod, node, par);
+        mod := Modifier.merge(mod, cls.ccMod);
         outer_mod := Modifier.propagate(cls.modifier, node, par);
         outer_mod := Modifier.merge(outerMod, outer_mod);
         mod := Modifier.merge(outer_mod, mod);
@@ -1314,7 +1379,7 @@ algorithm
   rdcl_cls := InstNode.getClass(redeclareNode);
 
   mod := Class.getModifier(rdcl_cls);
-  mod := Modifier.merge(mod, constrainingMod);
+  //mod := Modifier.merge(mod, constrainingMod);
   mod := Modifier.merge(outerMod, mod);
 
   prefs := mergeRedeclaredClassPrefixes(Class.getPrefixes(orig_cls),
@@ -1346,6 +1411,7 @@ algorithm
           orig_node := InstNode.setNodeType(node_ty, orig_node);
           rdcl_cls.elements := ClassTree.setClassExtends(orig_node, rdcl_cls.elements);
           rdcl_cls.modifier := mod;
+          rdcl_cls.ccMod := constrainingMod;
           rdcl_cls.prefixes := prefs;
         then
           rdcl_cls;
@@ -1365,6 +1431,7 @@ algorithm
         algorithm
           rdcl_cls.prefixes := prefs;
           rdcl_cls.modifier := mod;
+          rdcl_cls.ccMod := constrainingMod;
         then
           rdcl_cls;
 

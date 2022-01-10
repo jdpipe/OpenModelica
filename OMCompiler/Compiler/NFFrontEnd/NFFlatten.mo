@@ -77,7 +77,7 @@ import Face = NFConnector.Face;
 import System;
 import ComplexType = NFComplexType;
 import NFInstNode.CachedData;
-import NFPrefixes.{Direction, Variability, Visibility, Parallelism};
+import NFPrefixes.{Direction, Variability, Visibility, Purity, Parallelism};
 import Variable = NFVariable;
 import ElementSource;
 import Ceval = NFCeval;
@@ -206,6 +206,25 @@ algorithm
   funcs := List.fold(flatModel.initialAlgorithms, collectAlgorithmFuncs, funcs);
   execStat(getInstanceName());
 end collectFunctions;
+
+function vectorizeVariableBinding
+  input output Variable var;
+protected
+  list<tuple<String, Binding>> ty_attrs = {};
+  String attr_name;
+  Binding attr_binding;
+algorithm
+  var.binding := vectorizeBinding(var.binding, var.ty);
+
+  for ty_attr in var.typeAttributes loop
+    (attr_name, attr_binding) := ty_attr;
+    attr_binding := vectorizeBinding(attr_binding,
+      Type.copyDims(var.ty, Binding.getType(attr_binding)));
+    ty_attrs := (attr_name, attr_binding) :: ty_attrs;
+  end for;
+
+  var.typeAttributes := listReverseInPlace(ty_attrs);
+end vectorizeVariableBinding;
 
 protected
 function flattenClass
@@ -753,6 +772,41 @@ algorithm
   end match;
 end vectorizeArray;
 
+function vectorizeBinding
+  input output Binding binding;
+  input Type varType;
+protected
+  Expression bind_exp;
+  Type bind_ty;
+  Integer dim_diff;
+  list<Dimension> dims;
+  list<Expression> dim_expl;
+algorithm
+  () := match binding
+    case Binding.TYPED_BINDING(bindingExp = bind_exp)
+      algorithm
+        bind_ty := match bind_exp
+          case Expression.CREF()
+            then ComponentRef.getSubscriptedType(bind_exp.cref, includeScope = true);
+          else Expression.typeOf(bind_exp);
+        end match;
+
+        //bind_ty := Expression.typeOf(binding.bindingExp);
+        dim_diff := Type.dimensionDiff(varType, bind_ty);
+
+        if dim_diff > 0 then
+          dim_expl := list(Dimension.sizeExp(d) for d in List.firstN(Type.arrayDims(varType), dim_diff));
+          binding.bindingExp := Expression.CALL(Call.makeTypedCall(NFBuiltinFuncs.FILL_FUNC,
+            binding.bindingExp :: dim_expl, binding.variability, Purity.PURE, varType));
+          binding.bindingType := Expression.typeOf(binding.bindingExp);
+        end if;
+      then
+        ();
+
+    else ();
+  end match;
+end vectorizeBinding;
+
 function vectorizeEquation
   input output Equation eqn;
   input list<Dimension> dimensions;
@@ -814,7 +868,6 @@ algorithm
       list<Expression> ranges;
       list<Subscript> subs;
       list<Statement> body;
-      Statement stmt;
 
     // let simple assignment as is
     case Algorithm.ALGORITHM(statements = {Statement.ASSIGNMENT(lhs = Expression.CREF(), rhs = Expression.CREF())})
@@ -827,17 +880,13 @@ algorithm
         subs := listReverseInPlace(subs);
         body := Statement.mapExpList(alg.statements, function addIterator(prefix = prefix, subscripts = subs));
 
-        iter :: iters := iters;
-        range :: ranges := ranges;
-        stmt := Statement.FOR(iter, SOME(range), body, Statement.ForType.NORMAL(), alg.source);
-
         while not listEmpty(iters) loop
           iter :: iters := iters;
           range :: ranges := ranges;
-          stmt := Statement.FOR(iter, SOME(range), body, Statement.ForType.NORMAL(), alg.source);
+          body := {Statement.FOR(iter, SOME(range), body, Statement.ForType.NORMAL(), alg.source)};
         end while;
       then
-        Algorithm.ALGORITHM({stmt}, alg.source);
+        Algorithm.ALGORITHM(body, alg.source);
 
   end match;
 end vectorizeAlgorithm;
@@ -858,8 +907,7 @@ algorithm
   prefix_node := ComponentRef.node(prefix);
 
   for dim in dimensions loop
-    iter_comp := Component.newIterator(Type.INTEGER(), InstNode.info(prefix_node));
-    iter := InstNode.fromComponent("$i" + String(index), iter_comp, InstNode.parent(prefix_node));
+    iter := InstNode.newIndexedIterator(index, Type.INTEGER(), InstNode.info(prefix_node));
     iterators := iter :: iterators;
     index := index + 1;
 

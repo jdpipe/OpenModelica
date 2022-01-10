@@ -218,6 +218,10 @@ public
     input Integer N;
     input output Type ty;
   algorithm
+    if N == 0 then
+      return;
+    end if;
+
     ty := match ty
       local
         list<Dimension> dims;
@@ -597,6 +601,17 @@ public
     end match;
   end isPolymorphic;
 
+  function isPolymorphicNamed
+    input Type ty;
+    input String name;
+    output Boolean res;
+  algorithm
+    res := match ty
+      case POLYMORPHIC() then name == ty.name;
+      else false;
+    end match;
+  end isPolymorphicNamed;
+
   function firstTupleType
     input Type ty;
     output Type outTy;
@@ -854,7 +869,10 @@ public
       case Type.COMPLEX() then AbsynUtil.pathString(InstNode.scopePath(ty.cls));
       case Type.FUNCTION() then Function.typeString(ty.fn);
       case Type.METABOXED() then "#" + toString(ty.ty);
-      case Type.POLYMORPHIC() then "<" + ty.name + ">";
+      case Type.POLYMORPHIC()
+        then if Util.stringStartsWith("__", ty.name) then
+          substring(ty.name, 3, stringLength(ty.name)) else "<" + ty.name + ">";
+
       case Type.ANY() then "$ANY$";
       case Type.CONDITIONAL_ARRAY() then toString(ty.trueType) + "|" + toString(ty.falseType);
       else

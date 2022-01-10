@@ -2372,10 +2372,10 @@ algorithm
 
     case (_, Type.POLYMORPHIC())
       algorithm
-        expression := Expression.box(expression);
-        // matchKind := MatchKind.GENERIC(expectedType.b,actualType);
+        (expression, compatibleType, matchKind) :=
+          matchPolymorphic(expectedType.name, actualType, expression);
       then
-        (Type.METABOXED(actualType), MatchKind.GENERIC);
+        (compatibleType, matchKind);
 
     case (Type.POLYMORPHIC(), _)
       algorithm
@@ -2398,6 +2398,54 @@ algorithm
     else (Type.UNKNOWN(), MatchKind.NOT_COMPATIBLE);
   end match;
 end matchTypes_cast;
+
+function matchPolymorphic
+  input String polymorphicName;
+  input Type actualType;
+  input output Expression exp;
+        output Type compatibleType;
+        output MatchKind matchKind;
+algorithm
+  (compatibleType, matchKind) := match polymorphicName
+    // Any type, used when we don't want the expression to be boxed.
+    case "__Any" then (actualType, MatchKind.GENERIC);
+
+    // Any scalar type.
+    case "__Scalar"
+      algorithm
+        matchKind := if Type.isScalar(actualType) then MatchKind.GENERIC else MatchKind.NOT_COMPATIBLE;
+      then
+        (actualType, matchKind);
+
+    // Any array type.
+    case "__Array"
+      algorithm
+        matchKind := if Type.isArray(actualType) then MatchKind.GENERIC else MatchKind.NOT_COMPATIBLE;
+      then
+        (actualType, matchKind);
+
+    case "__Connector"
+      algorithm
+        matchKind := if Type.isScalar(actualType) and Expression.isConnector(exp) then
+          MatchKind.GENERIC else MatchKind.NOT_COMPATIBLE;
+      then
+        (actualType, matchKind);
+
+    case "__ComponentExpression"
+      algorithm
+        matchKind := if Type.isScalar(actualType) and Expression.isComponentExpression(exp) then
+          MatchKind.GENERIC else MatchKind.NOT_COMPATIBLE;
+      then
+        (actualType, matchKind);
+
+    else
+      algorithm
+        exp := Expression.box(exp);
+      then
+        (Type.METABOXED(actualType), MatchKind.GENERIC);
+
+  end match;
+end matchPolymorphic;
 
 function getRangeType
   input Expression startExp;

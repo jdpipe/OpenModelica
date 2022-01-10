@@ -1619,7 +1619,6 @@ uniontype Function
           // argument should be a cref?
           case "change" then true;
           case "der" then true;
-          case "diagonal" then true;
           // Function should not be used in function context.
           case "edge" then true;
           // can have variable number of arguments
@@ -1652,6 +1651,7 @@ uniontype Function
           // needs unboxing and return type fix.
           case "product" then true;
           case "promote" then true;
+          case "pure" then true;
           case "root" then true;
           case "rooted" then true;
           case "uniqueRoot" then true;

@@ -3568,7 +3568,7 @@ algorithm
     local
       list<DAE.Exp> arraylist;
       DAE.Type at;
-      Boolean a;
+      Boolean is_scalar;
       FCore.Graph env;
       DAE.Exp s,exp;
       DAE.Type sty,ty,sty2;
@@ -3588,18 +3588,18 @@ algorithm
         arraylist = List.fill(s, v);
         sty2 = DAE.T_ARRAY(sty, {DAE.DIM_INTEGER(v)});
         at = Types.simplifyType(sty2);
-        a = Types.isArray(sty2);
+        is_scalar = not Types.isArray(sty);
       then
-        (cache,DAE.ARRAY(at,a,arraylist),DAE.PROP(sty2,c1));
+        (cache,DAE.ARRAY(at,is_scalar,arraylist),DAE.PROP(sty2,c1));
 
     case (cache,_,s,sty,{Values.INTEGER(integer = v)},c1,_,_,_)
       equation
         arraylist = List.fill(s, v);
         sty2 = DAE.T_ARRAY(sty, {DAE.DIM_INTEGER(v)});
         at = Types.simplifyType(sty2);
-        a = Types.isArray(sty2);
+        is_scalar = not Types.isArray(sty);
       then
-        (cache,DAE.ARRAY(at,a,arraylist),DAE.PROP(sty2,c1));
+        (cache,DAE.ARRAY(at,is_scalar,arraylist),DAE.PROP(sty2,c1));
 
     case (cache,env,s,sty,(Values.INTEGER(integer = v) :: rest),c1,pre,_,_)
       equation
@@ -3607,9 +3607,8 @@ algorithm
         arraylist = List.fill(exp, v);
         sty2 = DAE.T_ARRAY(ty, {DAE.DIM_INTEGER(v)});
         at = Types.simplifyType(sty2);
-        a = Types.isArray(sty2);
       then
-        (cache,DAE.ARRAY(at,a,arraylist),DAE.PROP(sty2,c1));
+        (cache,DAE.ARRAY(at,false,arraylist),DAE.PROP(sty2,c1));
 
     else
       equation
@@ -4577,16 +4576,16 @@ algorithm
         call = DAE.CLKCONST(DAE.INFERRED_CLOCK());
       then (cache, call, DAE.PROP(DAE.T_CLOCK_DEFAULT, DAE.C_VAR()));
 
-    // clock with Integer interval "Clock(intervalCounter)"
+    // clock with rational interval "Clock(intervalCounter)"
     case (cache,env,{aintervalCounter},{},impl,pre,_)
       equation
         (cache, intervalCounter, prop1) = elabExpInExpression(cache,env,aintervalCounter,impl,true,pre,info);
         ty1 = Types.arrayElementType(Types.getPropType(prop1));
         (intervalCounter,_) = Types.matchType(intervalCounter,ty1,DAE.T_INTEGER_DEFAULT,true);
-        call = DAE.CLKCONST(DAE.INTEGER_CLOCK(intervalCounter, DAE.ICONST(1)));
+        call = DAE.CLKCONST(DAE.RATIONAL_CLOCK(intervalCounter, DAE.ICONST(1)));
       then (cache, call, prop);
 
-    // clock with Integer interval "Clock(intervalCounter, resolution)"
+    // clock with rational interval "Clock(intervalCounter, resolution)"
     case (cache,env,{aintervalCounter, aresolution},{},impl,pre,_)
       equation
         (cache, intervalCounter, prop1) = elabExpInExpression(cache,env,aintervalCounter,impl,true,pre,info);
@@ -4600,7 +4599,7 @@ algorithm
         Error.assertionOrAddSourceMessage(ValuesUtil.valueInteger(val) >= 1,
           Error.WRONG_VALUE_OF_ARG, {"Clock", "resolution", ValuesUtil.valString(val), ">= 1"}, info);
         resolution = ValuesUtil.valueExp(val, SOME(resolution));
-        call = DAE.CLKCONST(DAE.INTEGER_CLOCK(intervalCounter, resolution));
+        call = DAE.CLKCONST(DAE.RATIONAL_CLOCK(intervalCounter, resolution));
       then (cache, call, prop);
 
     // clock with Real interval "Clock(interval)"
@@ -4612,16 +4611,16 @@ algorithm
         call = DAE.CLKCONST(DAE.REAL_CLOCK(interval));
       then (cache, call, prop);
 
-    // Boolean Clock (clock triggered by zero-crossing events) "Clock(condition)"
+    // Event Clock (clock triggered by zero-crossing events) "Clock(condition)"
     case (cache,env,{acondition},{},impl,pre,_)
       equation
         (cache, condition, prop1) = elabExpInExpression(cache,env,acondition,impl,true,pre,info);
         ty1 = Types.arrayElementType(Types.getPropType(prop1));
         (condition,_) = Types.matchType(condition,ty1,DAE.T_BOOL_DEFAULT,true);
-        call = DAE.CLKCONST(DAE.BOOLEAN_CLOCK(condition, DAE.RCONST(0.0)));
+        call = DAE.CLKCONST(DAE.EVENT_CLOCK(condition, DAE.RCONST(0.0)));
       then (cache, call, prop);
 
-    // Boolean Clock (clock triggered by zero-crossing events) "Clock(condition, startInterval)"
+    // Event Clock (clock triggered by zero-crossing events) "Clock(condition, startInterval)"
     case (cache,env,{acondition, astartInterval},{},impl,pre,_)
       equation
         (cache, condition, prop1) = elabExpInExpression(cache,env,acondition,impl,true,pre,info);
@@ -4633,7 +4632,7 @@ algorithm
         // TODO! check if expression startInterval is >= 0.0
         // rStartInterval = Expression.toReal(startInterval);
         // true = rStartInterval >= 0.0;
-        call = DAE.CLKCONST(DAE.BOOLEAN_CLOCK(condition, startInterval));
+        call = DAE.CLKCONST(DAE.EVENT_CLOCK(condition, startInterval));
       then (cache, call, prop);
 
     // Solver Clock "Clock(c, solverMethod)"
