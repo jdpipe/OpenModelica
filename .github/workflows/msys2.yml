@@ -30,7 +30,7 @@ jobs:
         update: true
         install: >-
           git wget zip unzip tar make diffutils patch 
-          autoconf automake m4 pkg-config libtool bison 
+          autoconf automake m4 pkg-config libtool flex bison 
           mingw-w64-x86_64-toolchain
           mingw-w64-x86_64-curl
           mingw-w64-x86_64-opencl-headers
