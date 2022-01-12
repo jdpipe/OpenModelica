@@ -65,6 +65,7 @@ jobs:
           mingw-w64-x86_64-sundials 
           mingw-w64-x86_64-zeromq 
           mingw-w64-x86_64-doxygen
+          mingw-w64-x86_64-gc
           
     - uses: actions/checkout@v2
       with:
