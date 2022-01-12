@@ -113,7 +113,9 @@ jobs:
         cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local
         make OMCompiler
 
-    - uses: actions/upload-artifact@v2
+    - name: Upload artifacts
+      if: always()
+      uses: actions/upload-artifact@v2
       with:
         name: CMakeError.log
         path: CMakeFiles/CMakeError.log
