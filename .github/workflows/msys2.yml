@@ -117,7 +117,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v2
       with:
-        name: CMakeError.log
-        path: CMakeFiles/CMakeError.log
+        name: cmake-logs
+        path: build/CMakeFiles/*.log
 
 # vim:sw=2:ts=2:et:tw=80
