@@ -1406,11 +1406,25 @@ public
     Type ty;
   algorithm
     IF(ty, cond, tb, fb) := exp;
-    tb := applySubscript(subscript, tb, restSubscripts);
-    fb := applySubscript(subscript, fb, restSubscripts);
-    ty := if Type.isConditionalArray(ty) then
-      Type.setConditionalArrayTypes(ty, typeOf(tb), typeOf(fb)) else typeOf(tb);
-    outExp := IF(ty, cond, tb, fb);
+
+    if Type.isConditionalArray(ty) then
+      // Subscripting both branches of a conditional array might not be possible
+      // since they have different dimensions. If it fails just subscript the
+      // whole if-expression instead.
+      try
+        tb := applySubscript(subscript, tb, restSubscripts);
+        fb := applySubscript(subscript, fb, restSubscripts);
+        ty := Type.setConditionalArrayTypes(ty, typeOf(tb), typeOf(fb));
+        outExp := IF(ty, cond, tb, fb);
+      else
+        outExp := makeSubscriptedExp(subscript :: restSubscripts, exp);
+      end try;
+    else
+      tb := applySubscript(subscript, tb, restSubscripts);
+      fb := applySubscript(subscript, fb, restSubscripts);
+      ty := typeOf(tb);
+      outExp := IF(ty, cond, tb, fb);
+    end if;
   end applySubscriptIf;
 
   function makeSubscriptedExp
@@ -3825,6 +3839,27 @@ public
       exp := makeArray(arr_ty, expl, literal = isLiteral(exp));
     end for;
   end fillType;
+
+  function fillArgs
+    "Creates an array from the given fill expression and list of dimensions,
+     similar to fill(fillExp, dims...). Fails if not all dimensions can be
+     converted to Integer values."
+    input Expression fillExp;
+    input list<Expression> dims;
+    output Expression result = fillExp;
+  protected
+    Integer dim_size;
+    list<Expression> arr;
+    Type arr_ty = typeOf(result);
+    Boolean is_literal = isLiteral(fillExp);
+  algorithm
+    for d in listReverse(dims) loop
+      dim_size := toInteger(d);
+      arr := list(result for e in 1:dim_size);
+      arr_ty := Type.liftArrayLeft(arr_ty, Dimension.fromInteger(dim_size));
+      result := Expression.makeArray(arr_ty, arr, is_literal);
+    end for;
+  end fillArgs;
 
   function liftArray
     "Creates an array with the given dimension, where each element is the given

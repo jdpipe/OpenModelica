@@ -318,6 +318,7 @@ DimInvalidExp3.mo \
 DimInvalidType1.mo \
 DimInvalidType2.mo \
 DimNegative1.mo \
+DimNegative2.mo \
 DimRagged1.mo \
 DimRagged2.mo \
 DimSize1.mo \
@@ -671,6 +672,7 @@ IfExpression8.mo \
 IfExpression10.mo \
 IfExpression11.mo \
 IfExpression12.mo \
+IfExpression13.mo \
 IfEquationInvalidCond1.mo \
 ih1.mo \
 ih2.mo \
@@ -735,6 +737,9 @@ InnerOuterMissing6.mo \
 InnerOuterMissing7.mo \
 InnerOuterMissing8.mo \
 InnerOuterNotInner1.mo \
+InnerOuterPartialOuter1.mo \
+InnerOuterPartialOuter2.mo \
+InnerOuterReplaceable1.mo \
 InStreamArray.mo \
 InStreamFlowThreshold.mo \
 InStreamInsideOutside.mo \

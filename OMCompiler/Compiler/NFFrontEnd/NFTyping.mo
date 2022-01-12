@@ -366,6 +366,10 @@ protected
   Expression cond;
   Boolean is_deleted;
 algorithm
+  if InstNode.isOnlyOuter(component) then
+    return;
+  end if;
+
   ty := match c
     // An untyped component, type it.
     case Component.UNTYPED_COMPONENT()
@@ -676,8 +680,6 @@ algorithm
     // Other kinds of dimensions are already typed.
     else dimension;
   end match;
-
-  verifyDimension(dimension, component, info);
 end typeDimension;
 
 function subscriptDimExp
@@ -700,7 +702,7 @@ algorithm
   // If the expression has too many dimensions, add split subscripts based on
   // the component's parent's dimensions until we get a scalar expression.
   subs := {};
-  parent := InstNode.derivedParent(component);
+  parent := InstNode.instanceParent(component);
 
   while exp_dims > 0 and not InstNode.isEmpty(parent) loop
     parent_dims := InstNode.dimensionCount(parent);
@@ -714,7 +716,7 @@ algorithm
       end if;
     end for;
 
-    parent := InstNode.derivedParent(parent);
+    parent := InstNode.instanceParent(parent);
   end while;
 
   dimExp := Expression.applySubscripts(subs, dimExp);
@@ -737,27 +739,6 @@ algorithm
     else dimExp;
   end match;
 end simplifyDimExp;
-
-function verifyDimension
-  input Dimension dimension;
-  input InstNode component;
-  input SourceInfo info;
-algorithm
-  () := match dimension
-    case Dimension.INTEGER()
-      algorithm
-        // Check that integer dimensions are not negative.
-        if dimension.size < 0 then
-          Error.addSourceMessage(Error.NEGATIVE_DIMENSION_INDEX,
-            {String(dimension.size), InstNode.name(component)}, info);
-          fail();
-        end if;
-      then
-        ();
-
-    else ();
-  end match;
-end verifyDimension;
 
 function makeDimension
   input Expression dimExp;
@@ -790,7 +771,7 @@ protected
   Expression exp;
   Binding parent_binding;
 algorithm
-  parent := InstNode.derivedParent(component);
+  parent := InstNode.instanceParent(component);
 
   if InstNode.isComponent(parent) then
     // Get the binding of the component's parent.
@@ -883,6 +864,10 @@ protected
   Type ty;
 algorithm
   c := InstNode.component(node);
+
+  if InstNode.isOnlyOuter(component) then
+    return;
+  end if;
 
   () := match c
     case Component.TYPED_COMPONENT()
@@ -1061,7 +1046,7 @@ protected
   InstNode parent;
 algorithm
   if Binding.isEach(binding) then
-    parent := InstNode.derivedParent(component);
+    parent := InstNode.instanceParent(component);
 
     if not Type.isArray(InstNode.getType(parent)) then
       Error.addStrictMessage(Error.EACH_ON_NON_ARRAY,
@@ -2786,7 +2771,7 @@ protected
 algorithm
   comp := InstNode.component(component);
 
-  if Component.isDeleted(comp) then
+  if Component.isDeleted(comp) or InstNode.isOnlyOuter(component) then
     return;
   end if;
 
