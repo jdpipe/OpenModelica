@@ -40,6 +40,7 @@
 #include <unistd.h>
 #endif
 
+#include "netstream-sizes.h"
 #include "netstream-sender.h"
 
 using namespace std;

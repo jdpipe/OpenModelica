@@ -32,7 +32,6 @@ target_link_libraries(bomc PRIVATE omc::compiler::runtime)
 target_link_libraries(bomc PRIVATE omc::compiler::graphstream)
 
 
-
 set_target_properties(bomc
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bootstrapped/bin
@@ -54,6 +53,11 @@ if(WIN32)
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:omc::simrt::runtime> ${CMAKE_CURRENT_BINARY_DIR}/bootstrapped/bin
     COMMENT "Copying OpenModelicaRuntimeC.dll for the bootstrapped omc (to ${CMAKE_CURRENT_BINARY_DIR}/bootstrapped/bin).")
 endif()
+
+if(LINUX)
+    target_link_libraries(bomc PUBLIC dl)
+endif()
+
 
 # add_custom_command(
 #     TARGET bomc
