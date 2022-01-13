@@ -111,7 +111,7 @@ jobs:
         mkdir build
         cd build
         cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local
-        make OMCompiler
+        make omc
 
     - name: Upload artifacts
       if: always()
