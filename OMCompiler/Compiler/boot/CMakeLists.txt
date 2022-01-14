@@ -76,11 +76,6 @@ if(WIN32)
     COMMENT "Copying OpenModelicaRuntimeC.dll for the bootstrapped omc (to ${CMAKE_CURRENT_BINARY_DIR}/bootstrapped/bin).")
 endif()
 
-if(LINUX)
-    target_link_libraries(bomc PUBLIC dl)
-endif()
-
-
 # add_custom_command(
 #     TARGET bomc
 #     POST_BUILD

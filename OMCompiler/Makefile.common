@@ -154,8 +154,8 @@ $(OMBUILDDIR)/include/omc/c/gc_version.h: 3rdParty/gc/include/gc_version.h
 	cp -pPR $< $@
 $(OMBUILDDIR)/include/omc/c/gc_pthread_redirects.h: 3rdParty/gc/include/gc_pthread_redirects.h
 	cp -pPR $< $@
-3rdParty/gc/Makefile: 3rdParty/gc/CMakeLists.txt
-	(cd 3rdParty/gc && cmake -DCMAKE_INSTALL_PREFIX="`pwd`" -G "MinGW Makefiles")
+3rdParty/gc/Makefile: 3rdParty/gc/configure.ac
+	(cd 3rdParty/gc && mkdir -p m4 libatomic_ops/m4 && autoreconf -vif && automake --add-missing && ./configure --prefix="`pwd`" "--host=$(host)" $(LIBGC_EXTRA_CONFIGURATION) --enable-static --disable-gcj-support --disable-java-finalization --enable-large-config CC="$(CC)" CXX="$(CXX)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) -DLARGE_CONFIG -DTHREAD_LOCAL_ALLOC")
 
 ipopt:
 	mkdir -p $(OMC_IPOPT_ROOT)/build
