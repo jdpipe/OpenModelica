@@ -59,23 +59,23 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Look at graphstream
-      run: |
-        pushd  OMCompiler/3rdParty/graphstream/gs-netstream/c++/src
-        ls -la
-        echo "--------- netstream-storage.h -----------"
-        cat netstream-storage.h
-        echo "-----------------------------------------"
-        popd
-        pushd OMCompiler/3rdParty/graphstream/
-        wget https://github.com/jdpipe/gs-netstream/archive/refs/heads/master.zip
-        cd gs-netstream
-        bsdtar xvf ../master.zip -s'|[^/]*/||'
-        cd c++/src
-        echo "--------- new netstream-storage.h -----------"
-        cat netstream-storage.h
-        echo "-----------------------------------------"
-        popd
+#    - name: Look at graphstream
+#      run: |
+#        pushd  OMCompiler/3rdParty/graphstream/gs-netstream/c++/src
+#        ls -la
+#        echo "--------- netstream-storage.h -----------"
+#        cat netstream-storage.h
+#        echo "-----------------------------------------"
+#        popd
+#        pushd OMCompiler/3rdParty/graphstream/
+#        wget https://github.com/jdpipe/gs-netstream/archive/refs/heads/master.zip
+#        cd gs-netstream
+#        bsdtar xvf ../master.zip -s'|[^/]*/||'
+#        cd c++/src
+#        echo "--------- new netstream-storage.h -----------"
+#        cat netstream-storage.h
+#        echo "-----------------------------------------"
+#        popd
         
     - name: Install JAVA
       run: |
