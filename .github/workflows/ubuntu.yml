@@ -22,7 +22,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install wget zip unzip tar make diffutils patch autoconf automake m4 pkg-config libtool flex bison curl opencl-headers libopenblas-pthread-dev libopenblas-dev clang gfortran cmake ccache build-essential libhdf5-dev python3 python3-pip python3-wheel liblpsolve55-dev libexpat1-dev libncurses-dev libreadline-dev libopenscenegraph-dev libqt5webkit5 qt5-default libsundials-dev coinor-libipopt-dev libczmq-dev libzmqpp-dev libgc-dev default-jre-headless antlr3 libantlr3c-dev doxygen 
+        sudo apt-get install wget zip unzip tar make diffutils patch autoconf automake m4 pkg-config libtool flex bison libcurl4-nss-dev opencl-headers libopenblas-pthread-dev libopenblas-dev clang gfortran cmake ccache build-essential libhdf5-dev python3 python3-pip python3-wheel liblpsolve55-dev libexpat1-dev libncurses-dev libreadline-dev libopenscenegraph-dev libqt5webkit5 qt5-default libsundials-dev coinor-libipopt-dev libczmq-dev libzmqpp-dev libgc-dev default-jre-headless antlr3 libantlr3c-dev doxygen 
 
     - name: Configure
       run: |
