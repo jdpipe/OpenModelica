@@ -16,13 +16,9 @@ jobs:
     runs-on: windows-latest
     strategy:
       fail-fast: false
-
     defaults:
       run:
         shell: msys2 {0}
-
-    env:
-      PYTEST_ADDOPTS: --color=yes
 
     steps:
     - uses: msys2/setup-msys2@v2
@@ -40,7 +36,6 @@ jobs:
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-ccache
           mingw-w64-x86_64-binutils
-          mingw-w64-x86_64-hdf5
           mingw-w64-x86_64-pkgconf
           mingw-w64-x86_64-python
           mingw-w64-x86_64-python-pip
@@ -54,13 +49,6 @@ jobs:
           mingw-w64-x86_64-readline
           mingw-w64-x86_64-OpenSceneGraph
           mingw-w64-x86_64-qt5
-          mingw-w64-x86_64-qtwebkit
-          mingw-w64-x86_64-sundials 
-          mingw-w64-x86_64-zeromq 
-          mingw-w64-x86_64-expat
-          mingw-w64-x86_64-ncurses
-          mingw-w64-x86_64-readline
-          mingw-w64-x86_64-OpenSceneGraph
           mingw-w64-x86_64-qtwebkit
           mingw-w64-x86_64-sundials 
           mingw-w64-x86_64-zeromq 
