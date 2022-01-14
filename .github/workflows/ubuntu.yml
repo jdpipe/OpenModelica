@@ -30,12 +30,13 @@ jobs:
         cmake .. -Wno-dev -DCMAKE_INSTALL_PREFIX=$HOME/.local
 
     - name: Build
+      run: |
         cd build
         make omc
 
     - name: Upload artifacts
-      if: always()
       uses: actions/upload-artifact@v2
+      if: always()
       with:
         name: cmake-logs
         path: build/CMakeFiles/*.log
