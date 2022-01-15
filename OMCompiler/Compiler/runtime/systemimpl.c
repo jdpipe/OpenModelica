@@ -51,10 +51,17 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #if defined(__MINGW32__)
-#define _POSIX_THREAD_SAFE_FUNCTIONS 200112L /* for ctime_r in time.h */
+# if defined(CLOCKS_PER_SEC) && !defined(_POSIX_THREAD_SAFE_FUNCTIONS)
+#  error "time.h should have been earlier included with _POSIX_THREAD_SAFE_FUNCTIONS enabled"
+# endif
+# if !defined(_POSIX_THREAD_SAFE_FUNCTIONS)
+#  error "_POSIX_THREAD_SAFE_FUNCTIONS should have been defined before this point"
+# endif
 #endif
-#include <time.h>
+#include <time.h> /* for ctime_r */
+
 #include <math.h>
 
 #include "util/rtclock.h"

@@ -58,6 +58,11 @@ extern "C" {
 #define DLLExport /* nothing */
 #endif
 
+/* to ensure that ctime_r is defined in <time.h> */
+#if defined(__MINGW32__)
+# define _POSIX_THREAD_SAFE_FUNCTIONS 200112L
+#endif
+
 #if defined(IMPORT_INTO)
 #define DLLDirection DLLImport
 #else /* we export from the dll */

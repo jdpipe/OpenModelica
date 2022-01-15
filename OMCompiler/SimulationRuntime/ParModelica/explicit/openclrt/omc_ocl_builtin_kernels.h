@@ -47,20 +47,23 @@
 
 */
 
-
-
-
 #ifndef _OMC_OCL_BUILTIN_KERNELS_H
 #define _OMC_OCL_BUILTIN_KERNELS_H
 
 // Don't need this. Avoid unneccesary header inclusions,
 // obey the dependencies.
 // #include <omc_ocl_common_header.h>
+
+// we only need a definition of 'modelica_real', hence suppress this one too.
 // This include will bring the omc_ocl_common_header.h
-#include <omc_ocl_memory_ops.h>
-#include <time.h>
+//#include <omc_ocl_memory_ops.h>
 
+// don't seem to need this either. don't include it if not used here, since
+// there are settings we need to pass to time.h on MSYS2 at least.
+//#include <time.h>
 
+// all we need is...
+#include <openmodelica_types.h>
 
 //binary array operations returning an array
 //for now: only pass arrays with the same size.

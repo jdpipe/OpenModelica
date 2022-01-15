@@ -47,10 +47,11 @@ extern "C"
 #include <stdlib.h>
 #include "util/omc_msvc.h"
 #include "util/omc_file.h"
+
+/* note that openmodelica.h includes omc_gc.h, which includes pthread, which includes time.h. */
 #include "openmodelica.h"
 #include "meta/meta_modelica.h"
 #include "ModelicaUtilities.h"
-
 #define ADD_METARECORD_DEFINITIONS static
 #if defined(OMC_BOOTSTRAPPING)
   #include "../boot/tarball-include/OpenModelicaBootstrappingHeader.h"
