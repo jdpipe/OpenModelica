@@ -110,7 +110,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: omc-installed
-        path: $HOME/.local
+        path: ~/.local
 
     - name: Upload artifacts
       if: always()
