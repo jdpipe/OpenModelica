@@ -101,16 +101,22 @@ jobs:
         cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local
         make omc -j2
 
+    - name: Build Whatever Else
+      run: |
+        cd build
+        make -j2
+
     - name: Install
       run: |
         cd build
-        make install_omc
+        mkdir tempinst
+        DESTDIR=tempinst make -j2 install
 
     - name: Upload binaries
       uses: actions/upload-artifact@v2
       with:
         name: omc-installed
-        path: ~/.local
+        path: build/tempinst
 
     - name: Upload artifacts
       if: always()

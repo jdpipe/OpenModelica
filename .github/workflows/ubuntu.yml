@@ -30,21 +30,27 @@ jobs:
         cd build
         cmake .. -Wno-dev -DCMAKE_INSTALL_PREFIX=$HOME/.local
 
-    - name: Build
+    - name: Build OMC
       run: |
         cd build
-        make omc -j2
+        make -j2 omc
+
+    - name: Build Whatever Else
+      run: |
+        cd build
+        make -j2
 
     - name: Install
       run: |
         cd build
-        make install_omc
+        mkdir tempinst
+        DESTDIR=tempinst make -j2 install
 
     - name: Upload binaries
       uses: actions/upload-artifact@v2
       with:
         name: omc-installed
-        path: ~/.local
+        path: build/tempinst
 
     - name: Upload cmake logs
       uses: actions/upload-artifact@v2
