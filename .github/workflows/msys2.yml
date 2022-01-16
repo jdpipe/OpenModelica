@@ -99,7 +99,18 @@ jobs:
         mkdir build
         cd build
         cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local
-        make omc
+        make omc -j2
+
+    - name: Install
+      run: |
+        cd build
+        make install_omc
+
+    - name: Upload binaries
+      uses: actions/upload-artifact@v2
+      with:
+        name: omc-installed
+        path: $HOME/.local
 
     - name: Upload artifacts
       if: always()

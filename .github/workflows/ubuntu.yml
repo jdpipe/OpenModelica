@@ -33,13 +33,25 @@ jobs:
     - name: Build
       run: |
         cd build
-        make omc
+        make omc -j2
 
-    - name: Upload artifacts
+    - name: Install
+      run: |
+        cd build
+        make install_omc
+
+    - name: Upload binaries
+      uses: actions/upload-artifact@v2
+      with:
+        name: omc-installed
+        path: $HOME/.local
+
+    - name: Upload cmake logs
       uses: actions/upload-artifact@v2
       if: always()
       with:
         name: cmake-logs
         path: build/CMakeFiles/*.log
+
 
 # vim: ts=2:sw=2:et
