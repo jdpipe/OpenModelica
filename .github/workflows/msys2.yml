@@ -58,7 +58,7 @@ jobs:
     - name: Install JAVA
       uses: crazy-max/ghaction-chocolatey@v1
       with:
-        args: install oraclesdk
+        args: install oraclejdk
 # this previously worked, but not any more...       
 #    - name: Install JAVA
 #      run: |
