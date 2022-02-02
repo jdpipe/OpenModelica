@@ -56,9 +56,9 @@ jobs:
           mingw-w64-x86_64-gc
 
     - name: Install JAVA
-      run: |
-        choco install oraclejdk
-        javac --version
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: install oraclesdk
 # this previously worked, but not any more...       
 #    - name: Install JAVA
 #      run: |
