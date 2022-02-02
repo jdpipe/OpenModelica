@@ -119,7 +119,7 @@ jobs:
     
     - name: Report version and dependencies
       run: |
-        export PATH=$PWD/build/tmpinst/bin:$PATH
+        export PATH=$PWD/build/tmpinst/$HOME/.local/bin:$PATH
         echo "CHECK FOR INSTALLED OMC---------------"
         which omc
         echo "CHECK OMC REPORTED VERSION---------------"
