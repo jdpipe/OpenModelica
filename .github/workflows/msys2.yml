@@ -49,6 +49,7 @@ jobs:
           mingw-w64-x86_64-readline
           mingw-w64-x86_64-sundials 
           mingw-w64-x86_64-doxygen
+          mingw-w64-x86_64-boost
 #          mingw-w64-x86_64-zeromq 
 #          mingw-w64-x86_64-OpenSceneGraph
 #          mingw-w64-x86_64-qt5
