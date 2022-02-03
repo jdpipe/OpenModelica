@@ -596,6 +596,7 @@ FuncUnknownDim3.mo \
 FuncVariability.mo \
 FuncViaComp.mo \
 FuncViaComp2.mo \
+FuncViaComp3.mo \
 FuncVectorization1.mo \
 FuncVectorization2.mo \
 FuncVectorization3.mo \
@@ -741,6 +742,8 @@ InnerOuterNotInner1.mo \
 InnerOuterPartialOuter1.mo \
 InnerOuterPartialOuter2.mo \
 InnerOuterReplaceable1.mo \
+InstanceRestriction1.mo \
+InstanceRestriction2.mo \
 InStreamArray.mo \
 InStreamFlowThreshold.mo \
 InStreamInsideOutside.mo \
@@ -767,6 +770,12 @@ LookupLibrary1.mo \
 loop1.mo \
 loop2.mo \
 loop3.mo \
+MergeComponents1.mo \
+MergeComponents2.mo \
+MergeComponents3.mo \
+MergeComponents4.mo \
+MergeComponents5.mo \
+MergeComponents6.mo \
 MissingRedeclare1.mo \
 mod1.mo \
 mod10.mo \
@@ -874,6 +883,8 @@ RecordBinding6.mo \
 RecordBinding7.mo \
 RecordBinding8.mo \
 RecordBinding9.mo \
+RecordBinding10.mo \
+RecordBinding11.mo \
 RecordConstructor1.mo \
 RecordConstructor2.mo \
 RecordExtends1.mo \

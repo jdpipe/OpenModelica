@@ -145,6 +145,8 @@ algorithm
   // Look up the class to instantiate and mark it as the root class.
   cls := Lookup.lookupClassName(classPath, top, NFInstContext.RELAXED,
            AbsynUtil.dummyInfo, checkAccessViolations = false);
+  cls := InstUtil.mergeScalars(cls);
+  checkInstanceRestriction(cls, classPath, context);
   cls := InstNode.setNodeType(InstNodeType.ROOT_CLASS(InstNode.EMPTY_NODE()), cls);
 
   // Instantiate the class.
@@ -2308,7 +2310,6 @@ protected
   Class cls = InstNode.getClass(node), inst_cls;
   array<InstNode> local_comps, exts;
   ClassTree cls_tree;
-  Restriction res;
   array<Dimension> dims;
   SourceInfo info;
   Type ty;
@@ -3846,6 +3847,28 @@ algorithm
     fail();
   end if;
 end checkPartialClass;
+
+function checkInstanceRestriction
+  input InstNode node;
+  input Absyn.Path path;
+  input InstContext.Type context;
+protected
+  SCode.Element elem;
+algorithm
+  if InstContext.inRelaxed(context) then
+    return;
+  end if;
+
+  elem := InstNode.definition(node);
+
+  if SCodeUtil.isFunction(elem) or SCodeUtil.isPackage(elem) then
+    Error.addSourceMessage(Error.INST_INVALID_RESTRICTION,
+      {AbsynUtil.pathString(path),
+       SCodeDump.restrString(SCodeUtil.getClassRestriction(elem))},
+      InstNode.info(node));
+    fail();
+  end if;
+end checkInstanceRestriction;
 
 annotation(__OpenModelica_Interface="frontend");
 end NFInst;
