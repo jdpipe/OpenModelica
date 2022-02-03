@@ -22,13 +22,15 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install wget zip unzip tar make diffutils patch autoconf automake m4 pkg-config libtool flex bison libcurl4-nss-dev opencl-headers libopenblas-pthread-dev libopenblas-dev clang gfortran cmake ccache build-essential libhdf5-dev python3 python3-pip python3-wheel liblpsolve55-dev libexpat1-dev libncurses-dev libreadline-dev libopenscenegraph-dev libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev libqt5opengl5-dev qt5-default libsundials-dev coinor-libipopt-dev libczmq-dev libzmqpp-dev libgc-dev default-jre-headless antlr3 libantlr3c-dev doxygen libboost-program-options-dev libboost-filesystem-dev 
+        sudo apt-get install wget zip unzip tar make diffutils patch autoconf automake m4 pkg-config libtool flex bison libcurl4-nss-dev opencl-headers libopenblas-pthread-dev libopenblas-dev clang gfortran cmake ccache build-essential libhdf5-dev python3 python3-pip python3-wheel liblpsolve55-dev libexpat1-dev libncurses-dev libreadline-dev libsundials-dev coinor-libipopt-dev libgc-dev default-jre-headless antlr3 libantlr3c-dev doxygen libboost-program-options-dev libboost-filesystem-dev
+# these deps are (probably?) only needed for GUI components:
+# libqt5webkit5-dev libqt5svg5-dev libqt5xmlpatterns5-dev libqt5opengl5-dev qt5-default libczmq-dev libzmqpp-dev libopenscenegraph-dev 
 
     - name: Configure
       run: |
         mkdir build
         cd build
-        cmake .. -Wno-dev -DCMAKE_INSTALL_PREFIX=$HOME/.local
+        cmake .. -Wno-dev -DCMAKE_INSTALL_PREFIX=$HOME/.local -DOM_ENABLE_GUI_CLIENTS=OFF
 
     - name: Build OMC
       run: |

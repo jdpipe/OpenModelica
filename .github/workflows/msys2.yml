@@ -47,13 +47,13 @@ jobs:
           mingw-w64-x86_64-expat
           mingw-w64-x86_64-ncurses
           mingw-w64-x86_64-readline
-          mingw-w64-x86_64-OpenSceneGraph
-          mingw-w64-x86_64-qt5
-          mingw-w64-x86_64-qtwebkit
           mingw-w64-x86_64-sundials 
-          mingw-w64-x86_64-zeromq 
           mingw-w64-x86_64-doxygen
-          mingw-w64-x86_64-gc
+#          mingw-w64-x86_64-zeromq 
+#          mingw-w64-x86_64-OpenSceneGraph
+#          mingw-w64-x86_64-qt5
+#          mingw-w64-x86_64-qtwebkit
+#          mingw-w64-x86_64-gc
 
     - name: Install JAVA
       uses: crazy-max/ghaction-chocolatey@v1
@@ -103,7 +103,7 @@ jobs:
         export OMDEV=/mingw64
         mkdir build
         cd build
-        cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local
+        cmake ../ -Wno-dev -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$HOME/.local -DOM_ENABLE_GUI_CLIENTS=OFF
         make omc -j2
 
     - name: Build Whatever Else
