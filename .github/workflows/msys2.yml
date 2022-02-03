@@ -117,16 +117,6 @@ jobs:
         mkdir tempinst
         DESTDIR=tempinst make -j2 install
     
-    - name: Report version and dependencies
-      run: |
-        export PATH=$PWD/build/tmpinst/$HOME/.local/bin:$PATH
-        echo "CHECK FOR INSTALLED OMC---------------"
-        which omc
-        echo "CHECK OMC REPORTED VERSION---------------"
-        omc --version
-        echo "CHECK DEPENDENCIES---------------"
-        ldd `which omc`
-            
     - name: Upload binaries
       uses: actions/upload-artifact@v2
       with:
