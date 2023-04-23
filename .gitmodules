@@ -1,15 +1,15 @@
 [submodule "OMOptim"]
 	path = OMOptim
-	url = ../OMOptim.git
+	url = https://github.com/OpenModelica/OMOptim.git
 [submodule "OMSimulator"]
 	path = OMSimulator
-	url = ../OMSimulator.git
+	url = https://github.com/OpenModelica/OMSimulator.git
 [submodule "OMCompiler/3rdParty"]
 	path = OMCompiler/3rdParty
-	url = ../OMCompiler-3rdParty
+	url = git@github.com:jdpipe/OMCompiler-3rdParty.git
 [submodule "OMSens"]
 	path = OMSens
-	url = ../OMSens.git
+	url = https://github.com/OpenModelica/OMSens.git
 [submodule "OMSens_Qt"]
 	path = OMSens_Qt
-	url = ../OMSens_Qt.git
+	url = https://github.com/OpenModelica/OMSens_Qt.git
